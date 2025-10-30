@@ -1,0 +1,43 @@
+def utm_epsg_from_lonlat(lon, lat):
+    """
+    Calcula EPSG de zona UTM basada en lon/lat (WGS84).
+    Retorna EPSG code (int). Asume hemisferio norte si lat >= 0.
+    """
+    zone = int((lon + 180) / 6) + 1
+    if lat >= 0:
+        epsg = 32600 + zone  # northern hemisphere
+    else:
+        epsg = 32700 + zone  # southern hemisphere
+    return epsg
+
+
+def compute_metric_crs(gdfs):
+    """
+    Calcula un CRS métrico (UTM) apropiado en base al centroid combinado
+    de una lista de GeoDataFrames (asume que están en EPSG:4326).
+    """
+    # juntar centros
+    centroids = []
+    for g in gdfs:
+        if g is None or len(g) == 0:
+            continue
+        # asegurar 4326
+        if g.crs is None:
+            raise ValueError("Uno de los GeoDataFrames no tiene CRS definido.")
+        g4326 = g.to_crs("EPSG:4326")
+        centroids.append(g4326.unary_union.centroid)
+    if len(centroids) == 0:
+        raise ValueError("No hay geometrías para calcular CRS métrico.")
+    # promedio de centroides
+    xs = [c.x for c in centroids]
+    ys = [c.y for c in centroids]
+    mean_lon = float(np.mean(xs))
+    mean_lat = float(np.mean(ys))
+    epsg = utm_epsg_from_lonlat(mean_lon, mean_lat)
+    return f"EPSG:{epsg}"
+
+
+metric_crs = compute_metric_crs([gdf_A, gdf_B])
+
+g2015_A = gdf_A.to_crs(metric_crs)
+g2025_B = gdf_B.to_crs(metric_crs)
