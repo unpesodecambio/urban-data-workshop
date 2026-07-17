@@ -38,7 +38,7 @@ This repository compiles short analyses, code experiments, and mini-projects dev
 
 **Alejandro Flores Cisneros**  
 Urban Planner & Geospatial Data Analyst  
-📧 [alflocis402@gmail.com](mailto:alflocis402@gmail.com)  
+📧 [alejandro.flocis@gmail.com](mailto:alejandro.flocis@gmail.com)  
 🔗 [LinkedIn](https://www.linkedin.com/in/afcisneros)
 
 ---
